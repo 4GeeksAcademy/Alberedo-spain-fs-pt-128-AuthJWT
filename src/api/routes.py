@@ -53,13 +53,13 @@ def login():
     user = db.session.execute(select(User).where(
         User.email == email)).scalar_one_or_none()
     if user is None:
-        return jsonify({"Error": "Invalid email or password"}), 400
+        return jsonify({"error": "Invalid email or password"}), 400
     
     if user.check_password(password):
         access_token = create_access_token(identity=str(user.id))
         return jsonify({"msg":"Login successfull", "access_token":access_token}), 200
     else:
-        return jsonify({"Error": "Invalid email or password"}), 400
+        return jsonify({"error": "Invalid email or password"}), 400
     
 @api.route("/profile", methods=["GET"])
 @jwt_required()
@@ -67,5 +67,7 @@ def get_profile():
     user_id = get_jwt_identity()
     user = db.session.get(User, int(user_id))
     if not user:
-        return jsonify({"msg": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 404
     return jsonify(user.serialize()), 200
+
+    from datetime import timedelta
